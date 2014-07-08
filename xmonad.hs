@@ -31,6 +31,7 @@ import XMonad.Actions.Plane
 import XMonad.Hooks.ManageDocks
 import XMonad.Hooks.UrgencyHook
 import XMonad.Hooks.ICCCMFocus
+import XMonad.Actions.CopyWindow
 import qualified XMonad.StackSet as W
 import qualified Data.Map as M
 import Data.Ratio ((%))
@@ -148,6 +149,8 @@ defaultLayouts = smartBorders(avoidStruts(
   -- Master window is at top left.
   ||| Grid))
 
+defaultToFullLayout = smartBorders(avoidStruts( noBorders Full ))
+
 
 -- Here we define some layouts which will be assigned to specific
 -- workspaces based on the functionality of that workspace.
@@ -173,6 +176,7 @@ gimpLayout = smartBorders(avoidStruts(ThreeColMid 1 (3/100) (3/4)))
 myLayouts =
   onWorkspace "7:Chat" chatLayout
   $ onWorkspace "9:Pix" gimpLayout
+  $ onWorkspace "8:Dbg" defaultToFullLayout
   $ defaultLayouts
 
 
@@ -211,6 +215,8 @@ myKeyBindings =
     , ((0, 0x1008FF12), spawn "amixer -q set Master toggle")
     , ((0, 0x1008FF11), spawn "amixer -q set Master 10%-")
     , ((0, 0x1008FF13), spawn "amixer -q set Master 10%+")
+    , ((myModMask, xK_v ), windows copyToAll) -- @@ Make focused window always visible
+    , ((myModMask .|. shiftMask, xK_v ),  killAllOtherCopies) -- @@ Toggle window state back
   ]
 
 
@@ -269,6 +275,7 @@ myManagementHooks = [
   , (className =? "Empathy") --> doF (W.shift "7:Chat")
   , (className =? "Pidgin") --> doF (W.shift "7:Chat")
   , (className =? "Gimp-2.8") --> doF (W.shift "9:Pix")
+  , (className =? "Rviz") --> doF (W.shift "8:Dbg")
   ]
 
 
